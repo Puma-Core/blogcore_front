@@ -28,13 +28,13 @@ npm run build
 rsync -a --delete dist/ /var/www/blogcore/dist/
 ```
 
-To deploy below an Apache path such as `http://fhome:7070/blogcore_front/`, build with that path:
+To deploy below an Apache path such as `http://fhome:7070/blogcore_front/`, create its separate build:
 
 ```sh
-VITE_BASE_PATH=/blogcore_front/ npm run build
+npm run build:fhome
 ```
 
-Add the directives from `apache/blogcore-subpath.conf` to the VirtualHost that serves `fhome:7070`. The bundled `.htaccess` rewrites client-side routes below that path to `index.html`.
+This produces `dist-fhome/`. Add the directives from `apache/blogcore-subpath.conf` to the VirtualHost that serves `fhome:7070`. The bundled `.htaccess` rewrites client-side routes below that path to `index.html`.
 
 Copy `apache/blogcore.conf` to Apache's site configuration directory and replace `blog.example.com` and `/var/www/blogcore/dist` with the real values. The configuration:
 

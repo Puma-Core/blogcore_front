@@ -3,6 +3,7 @@ import "./styles.css";
 const API_ORIGIN = "https://admin-blog.pumacore.com";
 const ABOUT_URL = "https://raw.githubusercontent.com/Puma-Core/BlogCore/refs/heads/main/ABOUT.md";
 const LOGO_URL = "https://public-bucket.pumacore.com/blogcore/public/logo.png";
+const PUMACORE_LOGO_URL = "https://avatars.githubusercontent.com/u/204806552?s=400&u=3514eee1d3d82f6704cddf7ab623cab65fcefa27&v=4";
 const WELCOME_GIF_URL = "https://public-bucket.pumacore.com/blogcore/public/9427edffd50c4f89b96adf70843ba113.gif";
 const WELCOME_FINAL_FRAME_AT_MS = 4040;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -62,7 +63,7 @@ function header() {
 }
 
 function footer() {
-  return `<footer class="site-footer"><span>BlogCore</span><span>Powered by PumaCore</span><img src="${LOGO_URL}" alt="PumaCore" /></footer>`;
+  return `<footer class="site-footer"><span>BlogCore</span><span>Powered by PumaCore</span><img src="${PUMACORE_LOGO_URL}" alt="PumaCore" /></footer>`;
 }
 
 function setPage(title, content) {

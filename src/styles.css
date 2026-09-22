@@ -32,7 +32,8 @@ a { color: inherit; }
 
 main { min-height: calc(100vh - 74px); padding-block: 48px; }
 .home { display: flex; flex-direction: column; justify-content: center; min-height: 80vh; padding-block: 64px; }
-.welcome-animation { display: block; width: 100px; height: 100px; margin: 0 auto 28px; object-fit: contain; }
+.welcome-animation { display: block; width: 100px; height: 100px; margin: 0 auto 28px; object-fit: contain; transition: opacity 500ms ease-out; }
+.welcome-animation.is-fading { opacity: 0; }
 .eyebrow, .section-label { color: #0879c2; font-size: 12px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; }
 h1, h2, h3 { font-family: Rosario, Georgia, serif; font-weight: 400; letter-spacing: -.01em; }
 .lede, .muted { color: #746b62; line-height: 1.6; }

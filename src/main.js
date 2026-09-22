@@ -4,7 +4,8 @@ const API_ORIGIN = "https://admin-blog.pumacore.com";
 const ABOUT_URL = "https://raw.githubusercontent.com/Puma-Core/BlogCore/refs/heads/main/ABOUT.md";
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 const appUrl = (path) => `${basePath}${path}`;
-const apiBase = (import.meta.env.VITE_API_BASE_URL || appUrl("/api")).replace(/\/$/, "");
+// Request paths already include /api, so the default is only the deployment base path.
+const apiBase = (import.meta.env.VITE_API_BASE_URL || basePath).replace(/\/$/, "");
 const app = document.querySelector("#app");
 const storageKey = "blogcore:recent-authors";
 

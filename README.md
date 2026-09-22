@@ -1,29 +1,36 @@
-# Author Connect
+# BlogCore Frontend
 
-Quiero que hagas un sitio web el cual al inicio De una bienvenida al usuario y un input text que tenga la capacidad introducir un texto relacionado al nombre identificador de un autor, el cual puede ser extraído a través de un app llamado "https://admin-blog.pumacore.com" Alli se encuentra información relacionada al autor.
-Luego Debe hacer un apartado donde en base a los datos del autor se extraiga los post enviados. En caso de no tenerlo debería tener un mensaje en ingles contenido no encontrado.
-El objetivo principal es que todo este redactado en ingles para posteriormente realizar implementaciones.
-El diseño deberes de una estética simple. 
-Nota: La url que se muestra es un extracto del entorno de desarrollo, pero los endpoints que se encuentran allí son lo mismos para el entorno de producción.
-Debes estar preparado para poder tener un despliegue de contenido completo y detallado sobre un post. No tienes posibilidad de poder hacer solo un single page Application sino una aplicación completa que puedas visualizar el contenido y los posts de los autores
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/f5049db2-1c68-47b1-8cbf-542639749132).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+Static client-side application built with Vite, HTML, CSS, and browser JavaScript. It has no React, SSR, TanStack Start, or runtime server.
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+npm install
 npm run dev
 ```
+
+Vite proxies `/api` to `https://admin-blog.pumacore.com` during development, so author and post queries work locally.
+
+## Production build
+
+```sh
+npm run build
+```
+
+The deployable static files are generated in `dist/`.
+
+## API configuration
+
+The BlogCore API does not currently allow cross-origin browser requests. A static deployment therefore needs an API proxy at `/api`, or CORS enabled by the API server.
+
+To use a different API proxy at build time, define `VITE_API_BASE_URL`:
+
+```sh
+VITE_API_BASE_URL=https://api-proxy.example.com npm run build
+```
+
+The proxy must expose the same paths as the BlogCore API, for example `/api/authors/:username/`.
+
+## Client-side routing
+
+The application uses the History API for `/`, `/about`, `/authors/:username`, and `/authors/:username/:post`. Configure the static host to rewrite unknown routes to `index.html` so direct links continue to work.

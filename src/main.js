@@ -5,8 +5,9 @@ const ABOUT_URL = "https://raw.githubusercontent.com/Puma-Core/BlogCore/refs/hea
 const LOGO_URL = "https://public-bucket.pumacore.com/blogcore/public/logo.png";
 const PUMACORE_LOGO_URL = "https://avatars.githubusercontent.com/u/204806552?s=400&u=3514eee1d3d82f6704cddf7ab623cab65fcefa27&v=4";
 const WELCOME_GIF_URL = "https://public-bucket.pumacore.com/blogcore/public/9427edffd50c4f89b96adf70843ba113.gif";
-const WELCOME_ANIMATION_DURATION_MS = 3950;
-const WELCOME_GIF_FADE_DURATION_MS = 500;
+const WELCOME_LOGO_APPEAR_AT_MS = 3900;
+const WELCOME_GIF_FADE_START_AT_MS = 3950;
+const WELCOME_GIF_FADE_DURATION_MS = 120;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 const appUrl = (path) => `${basePath}${path}`;
 // Request paths already include /api, so the default is only the deployment base path.
@@ -100,23 +101,21 @@ function socialLinks(networks) {
 }
 
 function renderHome() {
-  setPage("BlogCore - Find an author and read their posts", `<main class="home"><img id="welcome-animation" class="welcome-animation" src="${WELCOME_GIF_URL}" alt="BlogCore animation" /><h1>Read what authors publish.</h1><p class="lede">Type an author's public username to open their profile and browse every post they have written.</p><form class="search-form" id="author-search"><div class="search-box"><input id="username" type="text" placeholder="Author username, e.g. jane-doe" aria-label="Author username" autocomplete="off" /><ul id="suggestions" class="suggestions" hidden></ul></div><button type="submit">Search</button></form></main>`);
+  setPage("BlogCore - Find an author and read their posts", `<main class="home"><div id="welcome-animation" class="welcome-animation"><img class="welcome-logo" src="${LOGO_URL}" alt="BlogCore" /><img class="welcome-gif" src="${WELCOME_GIF_URL}" alt="BlogCore animation" /></div><h1>Read what authors publish.</h1><p class="lede">Type an author's public username to open their profile and browse every post they have written.</p><form class="search-form" id="author-search"><div class="search-box"><input id="username" type="text" placeholder="Author username, e.g. jane-doe" aria-label="Author username" autocomplete="off" /><ul id="suggestions" class="suggestions" hidden></ul></div><button type="submit">Search</button></form></main>`);
   const animation = document.querySelector("#welcome-animation");
-  const showWelcomeLogo = () => {
+  const logo = animation.querySelector(".welcome-logo");
+  const gif = animation.querySelector(".welcome-gif");
+  const completeWelcomeAnimation = () => {
     window.setTimeout(() => {
-      if (animation.isConnected) animation.classList.add("is-fading");
-    }, WELCOME_ANIMATION_DURATION_MS - WELCOME_GIF_FADE_DURATION_MS);
+      if (animation.isConnected) logo.classList.add("is-visible");
+    }, WELCOME_LOGO_APPEAR_AT_MS);
     window.setTimeout(() => {
-      if (!animation.isConnected) return;
-      const logo = document.createElement("img");
-      logo.className = "welcome-animation";
-      logo.src = LOGO_URL;
-      logo.alt = "BlogCore";
-      animation.replaceWith(logo);
-    }, WELCOME_ANIMATION_DURATION_MS);
+      if (animation.isConnected) gif.classList.add("is-fading");
+      window.setTimeout(() => gif.remove(), WELCOME_GIF_FADE_DURATION_MS);
+    }, WELCOME_GIF_FADE_START_AT_MS);
   };
-  if (animation.complete) showWelcomeLogo();
-  else animation.addEventListener("load", showWelcomeLogo, { once: true });
+  if (gif.complete) completeWelcomeAnimation();
+  else gif.addEventListener("load", completeWelcomeAnimation, { once: true });
   const form = document.querySelector("#author-search");
   const input = document.querySelector("#username");
   const suggestions = document.querySelector("#suggestions");

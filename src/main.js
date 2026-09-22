@@ -5,9 +5,9 @@ const ABOUT_URL = "https://raw.githubusercontent.com/Puma-Core/BlogCore/refs/hea
 const LOGO_URL = "https://public-bucket.pumacore.com/blogcore/public/logo.png";
 const PUMACORE_LOGO_URL = "https://avatars.githubusercontent.com/u/204806552?s=400&u=3514eee1d3d82f6704cddf7ab623cab65fcefa27&v=4";
 const WELCOME_GIF_URL = "https://public-bucket.pumacore.com/blogcore/public/9427edffd50c4f89b96adf70843ba113.gif";
-const WELCOME_LOGO_APPEAR_AT_MS = 3850;
-const WELCOME_GIF_FADE_START_AT_MS = 3900;
-const WELCOME_GIF_FADE_DURATION_MS = 120;
+const WELCOME_LOGO_APPEAR_AT_MS = 3750;
+const WELCOME_GIF_FADE_START_AT_MS = 3800;
+const WELCOME_GIF_FADE_DURATION_MS = 200;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 const appUrl = (path) => `${basePath}${path}`;
 // Request paths already include /api, so the default is only the deployment base path.

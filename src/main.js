@@ -2,6 +2,9 @@ import "./styles.css";
 
 const API_ORIGIN = "https://admin-blog.pumacore.com";
 const ABOUT_URL = "https://raw.githubusercontent.com/Puma-Core/BlogCore/refs/heads/main/ABOUT.md";
+const LOGO_URL = "https://public-bucket.pumacore.com/blogcore/public/logo.png";
+const WELCOME_GIF_URL = "https://public-bucket.pumacore.com/blogcore/public/9427edffd50c4f89b96adf70843ba113.gif";
+const WELCOME_FINAL_FRAME_AT_MS = 4000;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 const appUrl = (path) => `${basePath}${path}`;
 // Request paths already include /api, so the default is only the deployment base path.
@@ -55,12 +58,16 @@ function navigate(path) {
 function header() {
   const pathname = window.location.pathname;
   const route = pathname.startsWith(basePath) ? pathname.slice(basePath.length) || "/" : pathname;
-  return `<header class="site-header"><div class="header-content"><a class="brand" href="${appUrl("/")}"><img src="https://public-bucket.pumacore.com/blogcore/public/logo.png" alt="BlogCore" /><span>BlogCore</span></a><nav class="navigation" aria-label="Main navigation"><a href="${appUrl("/")}"${route === "/" ? ' aria-current="page"' : ""}>Authors</a><a href="${appUrl("/about")}"${route === "/about" ? ' aria-current="page"' : ""}>About</a></nav></div><hr /></header>`;
+  return `<header class="site-header"><div class="header-content"><a class="brand" href="${appUrl("/")}"><img src="${LOGO_URL}" alt="BlogCore" /><span>BlogCore</span></a><nav class="navigation" aria-label="Main navigation"><a href="${appUrl("/")}"${route === "/" ? ' aria-current="page"' : ""}>Authors</a><a href="${appUrl("/about")}"${route === "/about" ? ' aria-current="page"' : ""}>About</a></nav></div><hr /></header>`;
+}
+
+function footer() {
+  return `<footer class="site-footer"><span>BlogCore</span><span>Powered by PumaCore</span><img src="${LOGO_URL}" alt="PumaCore" /></footer>`;
 }
 
 function setPage(title, content) {
   document.title = title;
-  app.innerHTML = `${header()}${content}`;
+  app.innerHTML = `${header()}${content}${footer()}`;
 }
 
 function notice(title, message, link = "/", linkText = "Go home") {
@@ -91,7 +98,21 @@ function socialLinks(networks) {
 }
 
 function renderHome() {
-  setPage("BlogCore - Find an author and read their posts", `<main class="home"><p class="eyebrow">Welcome</p><h1>Read what authors publish.</h1><p class="lede">Type an author's public username to open their profile and browse every post they have written.</p><form class="search-form" id="author-search"><div class="search-box"><input id="username" type="text" placeholder="Author username, e.g. jane-doe" aria-label="Author username" autocomplete="off" /><ul id="suggestions" class="suggestions" hidden></ul></div><button type="submit">Search</button></form></main>`);
+  setPage("BlogCore - Find an author and read their posts", `<main class="home"><img id="welcome-animation" class="welcome-animation" src="${WELCOME_GIF_URL}" alt="BlogCore animation" /><h1>Read what authors publish.</h1><p class="lede">Type an author's public username to open their profile and browse every post they have written.</p><form class="search-form" id="author-search"><div class="search-box"><input id="username" type="text" placeholder="Author username, e.g. jane-doe" aria-label="Author username" autocomplete="off" /><ul id="suggestions" class="suggestions" hidden></ul></div><button type="submit">Search</button></form></main>`);
+  const animation = document.querySelector("#welcome-animation");
+  animation.addEventListener("load", () => {
+    // The final GIF frame begins at 4 seconds. Drawing it to canvas prevents its embedded loop.
+    window.setTimeout(() => {
+      const frozenFrame = document.createElement("canvas");
+      frozenFrame.className = animation.className;
+      frozenFrame.width = animation.naturalWidth;
+      frozenFrame.height = animation.naturalHeight;
+      frozenFrame.setAttribute("role", "img");
+      frozenFrame.setAttribute("aria-label", animation.alt);
+      frozenFrame.getContext("2d").drawImage(animation, 0, 0);
+      animation.replaceWith(frozenFrame);
+    }, WELCOME_FINAL_FRAME_AT_MS);
+  });
   const form = document.querySelector("#author-search");
   const input = document.querySelector("#username");
   const suggestions = document.querySelector("#suggestions");

@@ -129,11 +129,11 @@ function renderHome() {
   input.addEventListener("focus", updateSuggestions);
   suggestions.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-username]");
-    if (button) navigate(`/authors/${encodeURIComponent(button.dataset.username)}`);
+    if (button) window.location.assign(appUrl(`/authors/${encodeURIComponent(button.dataset.username)}`));
   });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (input.value.trim()) navigate(`/authors/${encodeURIComponent(input.value.trim())}`);
+    if (input.value.trim()) window.location.assign(appUrl(`/authors/${encodeURIComponent(input.value.trim())}`));
   });
 }
 

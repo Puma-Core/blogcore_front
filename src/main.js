@@ -208,4 +208,9 @@ document.addEventListener("click", (event) => {
   navigate(link.pathname);
 });
 window.addEventListener("popstate", renderRoute);
-renderRoute();
+try {
+  renderRoute();
+} catch (error) {
+  console.error(error);
+  setPage("BlogCore", notice("This page didn't load", "Please refresh the page and try again."));
+}

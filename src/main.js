@@ -101,9 +101,10 @@ function socialLinks(networks) {
 function renderHome() {
   setPage("BlogCore - Find an author and read their posts", `<main class="home"><img id="welcome-animation" class="welcome-animation" src="${WELCOME_GIF_URL}" alt="BlogCore animation" /><h1>Read what authors publish.</h1><p class="lede">Type an author's public username to open their profile and browse every post they have written.</p><form class="search-form" id="author-search"><div class="search-box"><input id="username" type="text" placeholder="Author username, e.g. jane-doe" aria-label="Author username" autocomplete="off" /><ul id="suggestions" class="suggestions" hidden></ul></div><button type="submit">Search</button></form></main>`);
   const animation = document.querySelector("#welcome-animation");
-  animation.addEventListener("load", () => {
+  const freezeAnimation = () => {
     // The final GIF frame begins at 4 seconds. Drawing it to canvas prevents its embedded loop.
     window.setTimeout(() => {
+      if (!animation.isConnected) return;
       const frozenFrame = document.createElement("canvas");
       frozenFrame.className = animation.className;
       frozenFrame.width = animation.naturalWidth;
@@ -111,9 +112,12 @@ function renderHome() {
       frozenFrame.setAttribute("role", "img");
       frozenFrame.setAttribute("aria-label", animation.alt);
       frozenFrame.getContext("2d").drawImage(animation, 0, 0);
+      animation.removeAttribute("src");
       animation.replaceWith(frozenFrame);
     }, WELCOME_FINAL_FRAME_AT_MS);
-  });
+  };
+  if (animation.complete) freezeAnimation();
+  else animation.addEventListener("load", freezeAnimation, { once: true });
   const form = document.querySelector("#author-search");
   const input = document.querySelector("#username");
   const suggestions = document.querySelector("#suggestions");

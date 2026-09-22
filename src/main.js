@@ -2,7 +2,9 @@ import "./styles.css";
 
 const API_ORIGIN = "https://admin-blog.pumacore.com";
 const ABOUT_URL = "https://raw.githubusercontent.com/Puma-Core/BlogCore/refs/heads/main/ABOUT.md";
-const apiBase = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/$/, "");
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+const appUrl = (path) => `${basePath}${path}`;
+const apiBase = (import.meta.env.VITE_API_BASE_URL || appUrl("/api")).replace(/\/$/, "");
 const app = document.querySelector("#app");
 const storageKey = "blogcore:recent-authors";
 
@@ -45,13 +47,14 @@ function addRecentSearch(username) {
 }
 
 function navigate(path) {
-  history.pushState({}, "", path);
+  history.pushState({}, "", appUrl(path));
   renderRoute();
 }
 
 function header() {
   const pathname = window.location.pathname;
-  return `<header class="site-header"><div class="header-content"><a class="brand" href="/"><img src="https://public-bucket.pumacore.com/blogcore/public/logo.png" alt="BlogCore" /><span>BlogCore</span></a><nav class="navigation" aria-label="Main navigation"><a href="/"${pathname === "/" ? ' aria-current="page"' : ""}>Authors</a><a href="/about"${pathname === "/about" ? ' aria-current="page"' : ""}>About</a></nav></div><hr /></header>`;
+  const route = pathname.startsWith(basePath) ? pathname.slice(basePath.length) || "/" : pathname;
+  return `<header class="site-header"><div class="header-content"><a class="brand" href="${appUrl("/")}"><img src="https://public-bucket.pumacore.com/blogcore/public/logo.png" alt="BlogCore" /><span>BlogCore</span></a><nav class="navigation" aria-label="Main navigation"><a href="${appUrl("/")}"${route === "/" ? ' aria-current="page"' : ""}>Authors</a><a href="${appUrl("/about")}"${route === "/about" ? ' aria-current="page"' : ""}>About</a></nav></div><hr /></header>`;
 }
 
 function setPage(title, content) {
@@ -60,7 +63,7 @@ function setPage(title, content) {
 }
 
 function notice(title, message, link = "/", linkText = "Go home") {
-  return `<main><section class="notice"><h1>${escapeHtml(title)}</h1><p class="muted">${escapeHtml(message)}</p><a class="button" href="${link}">${escapeHtml(linkText)}</a></section></main>`;
+  return `<main><section class="notice"><h1>${escapeHtml(title)}</h1><p class="muted">${escapeHtml(message)}</p><a class="button" href="${appUrl(link)}">${escapeHtml(linkText)}</a></section></main>`;
 }
 
 function authorAvatar(author, className = "avatar") {
@@ -121,7 +124,7 @@ async function renderAuthor(username) {
     let next = initialPosts.next;
     const renderPosts = () => {
       const label = `${String(posts.length).padStart(2, "0")} ${posts.length === 1 ? "article" : "articles"}`;
-      return `<section><div class="posts-heading"><h2>Posts</h2><span class="username">[ ${label} ]</span></div>${posts.length ? `<ul class="post-list">${posts.map((post) => `<li><a href="/authors/${encodeURIComponent(username)}/${encodeURIComponent(post.unique_name)}"><span class="post-date">${escapeHtml(formatDate(post.created_at))}</span><h3>${escapeHtml(post.title)}</h3><p>${escapeHtml(post.content_preview)}</p></a></li>`).join("")}</ul>` : '<p class="muted">Content not found.</p>'}${next ? '<button class="load-more" id="load-more" type="button">Load more +</button>' : ""}</section>`;
+      return `<section><div class="posts-heading"><h2>Posts</h2><span class="username">[ ${label} ]</span></div>${posts.length ? `<ul class="post-list">${posts.map((post) => `<li><a href="${appUrl(`/authors/${encodeURIComponent(username)}/${encodeURIComponent(post.unique_name)}`)}"><span class="post-date">${escapeHtml(formatDate(post.created_at))}</span><h3>${escapeHtml(post.title)}</h3><p>${escapeHtml(post.content_preview)}</p></a></li>`).join("")}</ul>` : '<p class="muted">Content not found.</p>'}${next ? '<button class="load-more" id="load-more" type="button">Load more +</button>' : ""}</section>`;
     };
     const authorTitle = author.title || author.fullname;
     setPage(`${author.fullname || username} - BlogCore`, `<main><section><div class="profile">${authorAvatar(author)}<div><span class="section-label">Profile</span><div class="username">/${escapeHtml(author.public_username || username)}</div><div class="profile-name">${escapeHtml(author.fullname)}</div></div></div><h1>${escapeHtml(authorTitle)}</h1><p class="lede">${escapeHtml(author.short_description || author.subtitle || "")}</p>${socialLinks(author.social_networks)}${author.subtitle ? `<p class="username">${escapeHtml(author.subtitle)}</p>` : ""}</section><hr class="divider" /><div id="posts">${renderPosts()}</div></main>`);
@@ -172,7 +175,7 @@ async function renderPost(username, uniqueName) {
   try {
     const [post, author] = await Promise.all([getJson(`/api/authors/${encodeURIComponent(username)}/posts/${encodeURIComponent(uniqueName)}/`), getJson(`/api/authors/${encodeURIComponent(username)}/`).catch(() => null)]);
     const displayAuthor = author || { fullname: post.author_full_name };
-    setPage(`${post.title} - BlogCore`, `<main><article class="article"><a class="back-link" href="/authors/${encodeURIComponent(username)}">&larr; ${escapeHtml(post.author_full_name)}</a><h1>${escapeHtml(post.title)}</h1><p class="muted">By ${escapeHtml(post.author_full_name)} · ${escapeHtml(formatDate(post.created_at, { year: "numeric", month: "long", day: "numeric" }))}</p><div class="article-content">${renderMarkdown(post.content)}</div><a class="author-footer" href="/authors/${encodeURIComponent(username)}">${authorAvatar(displayAuthor)}<span><span class="section-label">Posted by</span><strong>${escapeHtml(post.author_full_name)}</strong><span class="username">/${escapeHtml(post.public_username)} · ${escapeHtml(formatDate(post.created_at, { year: "numeric", month: "long", day: "numeric" }))}</span></span></a></article></main>`);
+    setPage(`${post.title} - BlogCore`, `<main><article class="article"><a class="back-link" href="${appUrl(`/authors/${encodeURIComponent(username)}`)}">&larr; ${escapeHtml(post.author_full_name)}</a><h1>${escapeHtml(post.title)}</h1><p class="muted">By ${escapeHtml(post.author_full_name)} · ${escapeHtml(formatDate(post.created_at, { year: "numeric", month: "long", day: "numeric" }))}</p><div class="article-content">${renderMarkdown(post.content)}</div><a class="author-footer" href="${appUrl(`/authors/${encodeURIComponent(username)}`)}">${authorAvatar(displayAuthor)}<span><span class="section-label">Posted by</span><strong>${escapeHtml(post.author_full_name)}</strong><span class="username">/${escapeHtml(post.public_username)} · ${escapeHtml(formatDate(post.created_at, { year: "numeric", month: "long", day: "numeric" }))}</span></span></a></article></main>`);
   } catch (error) {
     const missing = error.message === "not_found";
     setPage("Post - BlogCore", notice(missing ? "Content not found" : "Service unavailable", missing ? "This post does not exist or is no longer published." : "We could not reach the blog service. Please try again later.", `/authors/${encodeURIComponent(username)}`, "Back to the author"));
@@ -191,7 +194,10 @@ async function renderAbout() {
 }
 
 function renderRoute() {
-  const path = window.location.pathname.replace(/\/$/, "") || "/";
+  const pathname = window.location.pathname.startsWith(basePath)
+    ? window.location.pathname.slice(basePath.length)
+    : window.location.pathname;
+  const path = pathname.replace(/\/$/, "") || "/";
   const authorMatch = path.match(/^\/authors\/([^/]+)$/);
   const postMatch = path.match(/^\/authors\/([^/]+)\/([^/]+)$/);
   if (path === "/") renderHome();
@@ -205,7 +211,8 @@ document.addEventListener("click", (event) => {
   const link = event.target.closest("a[href]");
   if (!link || link.target || event.metaKey || event.ctrlKey || event.shiftKey || link.origin !== window.location.origin) return;
   event.preventDefault();
-  navigate(link.pathname);
+  const path = link.pathname.startsWith(basePath) ? link.pathname.slice(basePath.length) || "/" : link.pathname;
+  navigate(path);
 });
 window.addEventListener("popstate", renderRoute);
 try {

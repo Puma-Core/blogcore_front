@@ -5,7 +5,7 @@ const ABOUT_URL = "https://raw.githubusercontent.com/Puma-Core/BlogCore/refs/hea
 const LOGO_URL = "https://public-bucket.pumacore.com/blogcore/public/logo.png";
 const PUMACORE_LOGO_URL = "https://avatars.githubusercontent.com/u/204806552?s=400&u=3514eee1d3d82f6704cddf7ab623cab65fcefa27&v=4";
 const WELCOME_GIF_URL = "https://public-bucket.pumacore.com/blogcore/public/9427edffd50c4f89b96adf70843ba113.gif";
-const WELCOME_FINAL_FRAME_AT_MS = 4040;
+const WELCOME_ANIMATION_DURATION_MS = 4070;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 const appUrl = (path) => `${basePath}${path}`;
 // Request paths already include /api, so the default is only the deployment base path.
@@ -101,23 +101,18 @@ function socialLinks(networks) {
 function renderHome() {
   setPage("BlogCore - Find an author and read their posts", `<main class="home"><img id="welcome-animation" class="welcome-animation" src="${WELCOME_GIF_URL}" alt="BlogCore animation" /><h1>Read what authors publish.</h1><p class="lede">Type an author's public username to open their profile and browse every post they have written.</p><form class="search-form" id="author-search"><div class="search-box"><input id="username" type="text" placeholder="Author username, e.g. jane-doe" aria-label="Author username" autocomplete="off" /><ul id="suggestions" class="suggestions" hidden></ul></div><button type="submit">Search</button></form></main>`);
   const animation = document.querySelector("#welcome-animation");
-  const freezeAnimation = () => {
-    // The final GIF frame begins at 4 seconds. Drawing it to canvas prevents its embedded loop.
+  const showWelcomeLogo = () => {
     window.setTimeout(() => {
       if (!animation.isConnected) return;
-      const frozenFrame = document.createElement("canvas");
-      frozenFrame.className = animation.className;
-      frozenFrame.width = animation.naturalWidth;
-      frozenFrame.height = animation.naturalHeight;
-      frozenFrame.setAttribute("role", "img");
-      frozenFrame.setAttribute("aria-label", animation.alt);
-      frozenFrame.getContext("2d").drawImage(animation, 0, 0);
-      animation.removeAttribute("src");
-      animation.replaceWith(frozenFrame);
-    }, WELCOME_FINAL_FRAME_AT_MS);
+      const logo = document.createElement("img");
+      logo.className = animation.className;
+      logo.src = LOGO_URL;
+      logo.alt = "BlogCore";
+      animation.replaceWith(logo);
+    }, WELCOME_ANIMATION_DURATION_MS);
   };
-  if (animation.complete) freezeAnimation();
-  else animation.addEventListener("load", freezeAnimation, { once: true });
+  if (animation.complete) showWelcomeLogo();
+  else animation.addEventListener("load", showWelcomeLogo, { once: true });
   const form = document.querySelector("#author-search");
   const input = document.querySelector("#username");
   const suggestions = document.querySelector("#suggestions");

@@ -125,7 +125,10 @@ function renderHome() {
     suggestions.hidden = matches.length === 0;
     suggestions.innerHTML = matches.map((item) => `<li><button type="button" data-username="${escapeAttribute(item)}">/${escapeHtml(item)}</button></li>`).join("");
   };
-  input.addEventListener("input", updateSuggestions);
+  input.addEventListener("input", () => {
+    input.value = input.value.toLowerCase();
+    updateSuggestions();
+  });
   input.addEventListener("focus", updateSuggestions);
   suggestions.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-username]");
@@ -133,7 +136,8 @@ function renderHome() {
   });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (input.value.trim()) window.location.assign(appUrl(`/authors/${encodeURIComponent(input.value.trim())}`));
+    const username = input.value.trim().toLowerCase();
+    if (username) window.location.assign(appUrl(`/authors/${encodeURIComponent(username)}`));
   });
 }
 
@@ -178,7 +182,7 @@ async function renderAuthor(username) {
 
 function renderMarkdown(markdown) {
   const inline = (text) => escapeHtml(text)
-    .replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, '<img src="$2" alt="$1" loading="lazy" />')
+    .replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, '<img src="$2" alt="$1" loading="lazy" referrerpolicy="no-referrer" />')
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');

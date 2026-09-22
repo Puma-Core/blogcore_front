@@ -72,7 +72,7 @@ img.avatar { object-fit: cover; }
 .load-more:hover { color: #0879c2; }
 
 .back-link { text-underline-offset: 4px; }
-.article { max-width: 900px; }
+.article { max-width: 900px; margin-inline: auto; }
 .article > h1 { font-size: clamp(42px, 6vw, 64px); }
 .article-content { width: 90%; margin: 32px auto 0; line-height: 1.7; }
 .article-content img { display: block; width: 80%; height: auto; margin: 24px auto; }

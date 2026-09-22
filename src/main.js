@@ -8,6 +8,7 @@ const WELCOME_GIF_URL = "https://public-bucket.pumacore.com/blogcore/public/9427
 const WELCOME_LOGO_APPEAR_AT_MS = 3750;
 const WELCOME_GIF_FADE_START_AT_MS = 3800;
 const WELCOME_GIF_FADE_DURATION_MS = 200;
+const API_REQUEST_ATTEMPTS = 3;
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
 const appUrl = (path) => `${basePath}${path}`;
 // Request paths already include /api, so the default is only the deployment base path.
@@ -33,9 +34,23 @@ function formatDate(value, options = { year: "numeric", month: "long" }) {
 }
 
 async function getJson(path) {
-  const response = await fetch(`${apiBase}${path}`, { headers: { Accept: "application/json" } });
-  if (!response.ok) throw new Error(response.status === 404 ? "not_found" : "unavailable");
-  return response.json();
+  let status = 0;
+
+  for (let attempt = 0; attempt < API_REQUEST_ATTEMPTS; attempt += 1) {
+    try {
+      const response = await fetch(`${apiBase}${path}`, { headers: { Accept: "application/json" } });
+      status = response.status;
+      if (response.ok) return response.json();
+    } catch {
+      status = 0;
+    }
+
+    if (attempt < API_REQUEST_ATTEMPTS - 1) {
+      await new Promise((resolve) => window.setTimeout(resolve, 300 * (attempt + 1)));
+    }
+  }
+
+  throw new Error(status === 404 ? "not_found" : "unavailable");
 }
 
 function getRecentSearches() {
@@ -144,10 +159,11 @@ function renderHome() {
 async function renderAuthor(username) {
   setPage("Author - BlogCore", `<main><p class="muted">Loading author...</p></main>`);
   try {
-    const [author, initialPosts] = await Promise.all([
-      getJson(`/api/authors/${encodeURIComponent(username)}/`),
-      getJson(`/api/authors/${encodeURIComponent(username)}/posts/`),
-    ]);
+    const author = await getJson(`/api/authors/${encodeURIComponent(username)}/`);
+    const initialPosts = await getJson(`/api/authors/${encodeURIComponent(username)}/posts/`).catch(() => ({
+      results: [],
+      next: null,
+    }));
     addRecentSearch(author.public_username || username);
     let posts = initialPosts.results || [];
     let next = initialPosts.next;

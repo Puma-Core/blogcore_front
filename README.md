@@ -19,6 +19,23 @@ npm run build
 
 The deployable static files are generated in `dist/`.
 
+## Apache deployment
+
+Build and upload the contents of `dist/` to the Apache document root. Do not upload the repository root or open `dist/index.html` using `file://`.
+
+```sh
+npm run build
+rsync -a --delete dist/ /var/www/blogcore/dist/
+```
+
+Copy `apache/blogcore.conf` to Apache's site configuration directory and replace `blog.example.com` and `/var/www/blogcore/dist` with the real values. The configuration:
+
+- Serves the static Vite build.
+- Rewrites client-side routes such as `/authors/jane-doe` to `index.html`.
+- Proxies `/api` to the BlogCore API, avoiding the API's CORS restriction.
+
+Enable the Apache modules `rewrite`, `proxy`, `proxy_http`, and `ssl`. For a shared host without VirtualHost access, `dist/.htaccess` provides the route rewrite, but the provider must configure the `/api` proxy or the API must enable CORS.
+
 ## API configuration
 
 The BlogCore API does not currently allow cross-origin browser requests. A static deployment therefore needs an API proxy at `/api`, or CORS enabled by the API server.

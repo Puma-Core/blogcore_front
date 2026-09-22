@@ -99,18 +99,20 @@ function socialLinks(networks) {
 }
 
 function renderHome() {
-  setPage("BlogCore - Find an author and read their posts", `<main class="home"><div id="welcome-animation" class="welcome-animation"><img class="welcome-gif" src="${WELCOME_GIF_URL}" alt="BlogCore animation" /><img class="welcome-logo" src="${LOGO_URL}" alt="BlogCore" /></div><h1>Read what authors publish.</h1><p class="lede">Type an author's public username to open their profile and browse every post they have written.</p><form class="search-form" id="author-search"><div class="search-box"><input id="username" type="text" placeholder="Author username, e.g. jane-doe" aria-label="Author username" autocomplete="off" /><ul id="suggestions" class="suggestions" hidden></ul></div><button type="submit">Search</button></form></main>`);
+  setPage("BlogCore - Find an author and read their posts", `<main class="home"><img id="welcome-animation" class="welcome-animation" src="${WELCOME_GIF_URL}" alt="BlogCore animation" /><h1>Read what authors publish.</h1><p class="lede">Type an author's public username to open their profile and browse every post they have written.</p><form class="search-form" id="author-search"><div class="search-box"><input id="username" type="text" placeholder="Author username, e.g. jane-doe" aria-label="Author username" autocomplete="off" /><ul id="suggestions" class="suggestions" hidden></ul></div><button type="submit">Search</button></form></main>`);
   const animation = document.querySelector("#welcome-animation");
-  const gif = animation.querySelector(".welcome-gif");
   const showWelcomeLogo = () => {
     window.setTimeout(() => {
       if (!animation.isConnected) return;
-      animation.classList.add("is-complete");
-      window.setTimeout(() => gif.remove(), 450);
+      const logo = document.createElement("img");
+      logo.className = animation.className;
+      logo.src = LOGO_URL;
+      logo.alt = "BlogCore";
+      animation.replaceWith(logo);
     }, WELCOME_ANIMATION_DURATION_MS);
   };
-  if (gif.complete) showWelcomeLogo();
-  else gif.addEventListener("load", showWelcomeLogo, { once: true });
+  if (animation.complete) showWelcomeLogo();
+  else animation.addEventListener("load", showWelcomeLogo, { once: true });
   const form = document.querySelector("#author-search");
   const input = document.querySelector("#username");
   const suggestions = document.querySelector("#suggestions");

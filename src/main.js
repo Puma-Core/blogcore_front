@@ -65,7 +65,7 @@ function header() {
 }
 
 function footer() {
-  return `<footer class="site-footer"><span>BlogCore</span><span>Powered by PumaCore</span><img src="${PUMACORE_LOGO_URL}" alt="PumaCore" /></footer>`;
+  return `<footer class="site-footer"><span>BlogCore</span><a href="https://github.com/Puma-Core" target="_blank" rel="noopener noreferrer">Powered by PumaCore <img src="${PUMACORE_LOGO_URL}" alt="PumaCore" /></a></footer>`;
 }
 
 function setPage(title, content) {

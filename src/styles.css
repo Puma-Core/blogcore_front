@@ -85,6 +85,8 @@ img.avatar { object-fit: cover; }
 .notice { max-width: 640px; margin: 80px auto; text-align: center; }
 .notice h1 { margin-inline: auto; font-size: 32px; }
 .site-footer { display: flex; width: min(75%, 1100px); align-items: center; justify-content: center; gap: 12px; margin: 0 auto; padding: 24px 0; border-top: 1px solid #ddd8d0; color: #746b62; font-size: 13px; }
+.site-footer a { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+.site-footer a:hover { color: #0879c2; }
 .site-footer img { width: 28px; height: 28px; border-radius: 7px; object-fit: contain; }
 
 @media (max-width: 700px) {
